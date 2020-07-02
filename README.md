@@ -1,6 +1,8 @@
 # test1
 It's a test repository
 
+https://github.com/bigone1/test/blob/master/Screenshots/9.png
+
 Git 本地上传指令：
 1. git add .
 2. git commit -m "tj"
