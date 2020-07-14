@@ -1,13 +1,3 @@
-***
-
-title：TCGA数据下载
-
-author：周林
-
-date：2020.07.02
-
-***
-
 ### 一、GDC下载：https://portal.gdc.cancer.gov/repository
 
 1. 下载表达数据和临床数据的manifest文件以及metadata文件：
