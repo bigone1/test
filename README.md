@@ -16,4 +16,6 @@ Git 本地上传指令：
 
    =VLOOKUP(A2,Sheet1!A:M,10,0)
 
-diyi
+插件下载：Crx4Chrome
+
+VPN code:DTZ-NW6RW-BQ/FYD-C32AK-66
