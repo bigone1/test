@@ -19,3 +19,5 @@ Git 本地上传指令：
 插件下载：Crx4Chrome
 
 VPN code:DTZ-NW6RW-BQ/FYD-C32AK-66
+
+Oracle账户：zl0508@mail.ustc.edu.cn  Zl159357+-
