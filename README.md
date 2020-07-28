@@ -1,6 +1,8 @@
 # test1
 It's a test repository
 
+./bget.exe doi 10.1186/s12935-020-01351-3 -t 5 --suppl
+
 ![Error](https://github.com/bigone1/test/blob/master/Screenshots/1.png)
 
 | Git 本地上传指令                                   |
