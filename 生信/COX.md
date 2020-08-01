@@ -77,3 +77,75 @@ forestplot(labeltext=tabletext,
            )
 ```
 
+### Cox回归分析——森林图
+
+```R
+#step1   生成示例数据
+options(stringsAsFactors = F)
+# 生成模拟数据(基因表达与生存时间)
+df <- data.frame(ID = paste0("TCGA-",sample(100,100,replace = F)),
+                 time = abs(rnorm(100, mean = 2, sd = 5)),
+                 status = sample(c(0,1),100,replace = T))
+geneVec <- replicate(50,paste0(sample(LETTERS,4,replace = T),collapse = ""))
+
+for (i in geneVec) {
+  dfGene <- data.frame(i = abs(rnorm(100, mean = 5, sd = 8)))
+  df <- cbind(df,dfGene)
+}
+colnames(df)[4:length(df)] <- geneVec
+
+#step2 多因素Cox回归
+# COX模型构建
+library(survival)
+multiCox <- coxph(Surv(time, status) ~ ., data = df[,-1])
+multiCox <- step(multiCox,direction = "both")
+multiCoxSum <- summary(multiCox)
+# 输出模型参数
+out_multi <- data.frame()
+out_multi <- cbind(
+  coef=multiCoxSum$coefficients[,"coef"],
+  HR=multiCoxSum$conf.int[,"exp(coef)"],
+  HR.95L=multiCoxSum$conf.int[,"lower .95"],
+  HR.95H=multiCoxSum$conf.int[,"upper .95"],
+  pvalue=multiCoxSum$coefficients[,"Pr(>|z|)"])
+out_multi <- as.data.frame(cbind(id=row.names(out_multi),out_multi))
+
+#step3 森林图
+# 森林图
+out_multi[,2:ncol(out_multi)] <- as.numeric(unlist(out_multi[,2:ncol(out_multi)]))
+hz <- paste(round(out_multi$HR,3),
+            "(",round(out_multi$HR.95L,3),
+            "-",round(out_multi$HR.95H,3),")",sep = "")
+tabletext <- cbind(c(NA,"Gene",out_multi$id),
+                   c(NA,"Coefficient",round(out_multi$coef,3)),
+                   c(NA,"P value",ifelse(out_multi$pvalue<0.001,"P < 0.001",round(out_multi$pvalue,3))),
+                   c(NA,"Hazard Ratio(95% CI)",hz))
+nrow(tabletext)+1
+library(forestplot)
+forestplot(labeltext=tabletext, 
+           graph.pos=3,  #为Pvalue箱线图所在的位置
+           col=fpColors(box="#D55E00", lines="#CC79A7", zero = "gray50"),
+           mean=c(NA,NA,out_multi$HR),
+           lower=c(NA,NA,out_multi$HR.95L), #95%置信区间下限
+           upper=c(NA,NA,out_multi$HR.95H), #95%置信区间上限
+           boxsize=0.3,lwd.ci=2,   #箱子大小，线的宽度
+           ci.vertices.height = 0.08,ci.vertices=TRUE, #置信区间用线宽、高、型
+           zero=1,lwd.zero=1,      #zero线宽 基准线的位置
+           colgap=unit(5,"mm"),    #列间隙
+           xticks = c(0.5, 1,1.5), #横坐标刻度
+           lwd.xaxis=1,            #X轴线宽
+           lineheight = unit(0.8,"cm"), #固定行高
+           graphwidth = unit(.3,"npc"), #图在表中的宽度比例
+           cex=0.9, fn.ci_norm = fpDrawCircleCI, #误差条显示方式
+           hrzl_lines=list("2" = gpar(lwd=2, col="black"),
+                           "3" = gpar(lwd=2, col="black"), #第三行顶部加黑线，引号内数字标记行位置
+                           "34" = gpar(lwd=2, col="black")),#最后一行底部加黑线,"34"中数字为nrow(tabletext)+1
+           mar=unit(rep(0.5, times = 4), "cm"),#图形页边距
+           #fpTxtGp函数中的cex参数设置各个组件的大小
+           txt_gp=fpTxtGp(label=gpar(cex=1),
+                          ticks=gpar(cex=1.5),
+                          xlab=gpar(cex = 1.25),
+                          title=gpar(cex = 1.2)),
+           xlab="Hazard Ratio")
+```
+
