@@ -28,3 +28,9 @@ It's a test repository
 |      |                                      |      |
 |      |                                      |      |
 
+```R
+withr::with_makevars(c(PKG_LIBS = "-liconv"), install.packages("haven"), assignment = "+=")
+withr::with_makevars(c(PKG_LIBS = "-liconv"), install.packages("readxl"), assignment = "+=")
+install.packages("tidyverse")
+```
+
