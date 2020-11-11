@@ -417,3 +417,88 @@ write.table(resSig,file = '../case-vs-control-diff-pval-0.05-FC-2-DESeq2.gene.xl
             row.names = FALSE,quote = FALSE,na="")
 ```
 
+临床数据下载整理
+
+```R
+rm(list = ls())
+options(stringsAsFactors = F)
+project <- 'TCGA-COAD'
+clinicaldir <- "D:/download/gdc_download_20201111_062248.922899/"
+
+library(XML)
+library(methods)
+xmlFileName <- dir(path = clinicaldir,full.names = T,
+                   pattern = "xml$",recursive = T)
+AllPaticliniList <- lapply(xmlFileName,
+                           function(x){
+                             result <- xmlParse(file = x)
+                             rootNode <- xmlRoot(result)
+                             xmldataframe <- xmlToDataFrame(rootNode[2])
+                             return(t(xmldataframe))
+                           })
+AllPaticliniList <- t(do.call(cbind,AllPaticliniList))
+pclinData <- data.frame(Barcode=AllPaticliniList[,"bcr_patient_barcode"],
+                        Vital_status=AllPaticliniList[,"vital_status"],
+                        days_to_death=AllPaticliniList[,"days_to_death"],
+                        days_to_last_known_alive=AllPaticliniList[,"days_to_last_known_alive"],
+                        lastFollowupTime=AllPaticliniList[,"days_to_last_followup"],
+                        Stage=AllPaticliniList[,"stage_event"])
+rownames(pclinData) <- pclinData[,"Barcode"]
+splitStage <- function(Stage){
+  stage <- unlist(strsplit(Stage,split = "[S]"))[2]
+  stage <- unlist(strsplit(stage,split = "T"))[1]
+  stage <- paste("S",stage,sep = "")
+  
+  Tstage <- unlist(strsplit(Stage,split = "[T]"))[2]
+  Tstage <- unlist(strsplit(Tstage,split = "N"))[1]
+  Tstage <- paste("T",Tstage,sep = "")
+  
+  Nstage <- unlist(strsplit(Stage,split = "[N]"))[2]
+  Nstage <- unlist(strsplit(Nstage,split = "M"))[1]
+  Nstage <- paste("N",Nstage,sep="")
+  
+  Mstage <- unlist(strsplit(Stage,split = "[M]"))[2]
+  Mstage <- paste("M",Mstage,sep="")
+  
+  return(data.frame(stage,Tstage,Nstage,Mstage))
+}
+SurvivalTime <- c()
+Stage <- c()
+T_stage <- c()
+N_stage <- c()
+M_stage <- c()
+for(id in rownames(pclinData)){
+  days_to_death = as.numeric(pclinData[id,"days_to_death"])
+  lastFollowupTime=as.numeric(pclinData[id,"lastFollowupTime"])
+  Patientsurvtime <- c()
+  if(!is.na(days_to_death)){
+    Patientsurvtime <- c(days_to_death)
+  }else{Patientsurvtime <- c(lastFollowupTime)}
+  SurvivalTime <- c(SurvivalTime,Patientsurvtime)
+  TNMStage <- splitStage(Stage = pclinData[id,"Stage"])
+  Stage <- c(Stage,TNMStage[1,"stage"])
+  T_stage <- c(T_stage,TNMStage[1,"Tstage"])
+  N_stage <- c(N_stage,TNMStage[1,"Nstage"])
+  M_stage <- c(M_stage,TNMStage[1,"Mstage"])
+}
+getClinicalData <- function(pclinData){
+  tempdata <- pclinData
+  finalpclinical <- data.frame(Barcode=tempdata[,"Barcode"],
+                               vital_status=tempdata[,"Vital_status"],
+                               SurvivalTime=SurvivalTime,
+                               AllStage=tempdata[,"Stage"],
+                               Stage=Stage,
+                               T_stage=T_stage,
+                               N_stage=N_stage,
+                               M_stage=M_stage)
+  return(finalpclinical)
+}
+tidyclidata <- getClinicalData(pclinData)
+
+library(GDCRNATools)
+gdcClinicalDownload(project.id = project,
+                    write.manifest = FALSE,
+                    method = 'gdc-client',
+                    directory = 'D:/File/Rfile/clinical')
+```
+
