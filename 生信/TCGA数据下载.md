@@ -417,7 +417,7 @@ write.table(resSig,file = '../case-vs-control-diff-pval-0.05-FC-2-DESeq2.gene.xl
             row.names = FALSE,quote = FALSE,na="")
 ```
 
-临床数据下载整理
+# 临床数据下载整理
 
 ```R
 rm(list = ls())
@@ -500,5 +500,138 @@ gdcClinicalDownload(project.id = project,
                     write.manifest = FALSE,
                     method = 'gdc-client',
                     directory = 'D:/File/Rfile/clinical')
+```
+
+# ID转换
+
+```R
+library(biomaRt)
+listMarts()#查看支持的数据库
+ensemble=useMart("ensembl")#选择一个数据库
+
+#选择数据集
+ensemble=useDataset('hsapiens_gene_ensembl',mart = ensemble)
+#我们需要使用的属性有NM,geneSymbol
+NMID=c("NM_001193582","NM_004951","NM_003489")
+query=getBM(attributes = c("hgnc_symbol",
+"refseq_mrna"),
+            filters = ('refseq_mrna'),
+            values = list(NMID),
+            mart = ensemble)
+
+#query
+#  hgnc_symbol  refseq_mrna
+#1       NRCAM NM_001193582
+#2       NRIP1    NM_003489
+#3      GPR183    NM_004951
+
+gse76427 <- getGEO("GSE76427",AnnotGPL=F,getGPL=F)
+gse76427_exp <- exprs(gse76427[[1]])
+library(biomaRt)
+ensem <- useMart("ensembl")
+mart <- useDataset("hsapiens_gene_ensembl",mart=ensem)
+query76427 <- getBM(attributes=c("illumina_humanht_12_v4","entrezgene_id"),filters=("illumina_humanht_12_v4"),values=rownames(gse76427_exp),mart=mart)
+prob76427 <- data.frame(illumina_humanht_12_v4=rownames(gse76427_exp),stringsAsFactors=F)
+prob76427s <- dplyr::left_join(prob76427,query76427,by='illumina_humanht_12_v4')
+prob76427sn <- na.omit(prob76427s)
+j76427 <- intersect(prob76427sn$illumina_humanht_12_v4,rownames(gse76427_exp))
+gse76427_exp <- gse76427_exp[j76427,]
+gse76427_exp <- as.data.frame(gse76427_exp)
+prob76427snc <-dplyr::filter(prob76427sn,!duplicated(prob76427sn$illumina_humanht_12_v4))
+gse76427_exp$entr <- prob76427snc$entrezgene_id
+gse76427_exp <- gse76427_exp[order(gse76427_exp$entr),]
+gse76427_exp1 <- aggregate(gse76427_exp[,c(1:(ncol(gse76427_exp)-1))],by=list(gse76427_exp$entr),mean)
+write.table(gse76427_exp1,file='gse76427.txt',sep='\t')
+
+gse36376 <- getGEO("GSE36376",AnnotGPL=F,getGPL=F)
+gse36376_exp <- exprs(gse36376[[1]])
+library(biomaRt)
+ensem <- useMart("ensembl")
+mart <- useDataset("hsapiens_gene_ensembl",mart=ensem)
+query36376 <- getBM(attributes=c("illumina_humanht_12_v4","entrezgene_id"),filters=("illumina_humanht_12_v4"),values=rownames(gse36376_exp),mart=mart)
+prob36376 <- data.frame(illumina_humanht_12_v4=rownames(gse36376_exp),stringsAsFactors=F)
+prob36376s <- dplyr::left_join(prob36376,query36376,by='illumina_humanht_12_v4')
+prob36376sn <- na.omit(prob36376s)
+j36376 <- intersect(prob36376sn$illumina_humanht_12_v4,rownames(gse36376_exp))
+gse36376_exp <- gse36376_exp[j36376,]
+gse36376_exp <- as.data.frame(gse36376_exp)
+prob36376snc <-dplyr::filter(prob36376sn,!duplicated(prob36376sn$illumina_humanht_12_v4))
+gse36376_exp$entr <- prob36376snc$entrezgene_id
+gse36376_exp <- gse36376_exp[order(gse36376_exp$entr),]
+gse36376_exp1 <- aggregate(gse36376_exp[,c(1:(ncol(gse36376_exp)-1))],by=list(gse36376_exp$entr),mean)
+write.table(gse36376_exp1,file='gse36376.txt',sep='\t')
+
+gse84005 <- getGEO("GSE84005",AnnotGPL=F,getGPL=F)
+gse84005_exp <- exprs(gse84005[[1]])
+library(biomaRt)
+ensem <- useMart("ensembl")
+mart <- useDataset("hsapiens_gene_ensembl",mart=ensem)
+query84005 <- getBM(attributes=c("affy_huex_1_0_st_v2","entrezgene_id"),filters=("affy_huex_1_0_st_v2"),values=rownames(gse84005_exp),mart=mart)
+prob84005 <- data.frame(illumina_humanht_12_v4=rownames(gse84005_exp),stringsAsFactors=F)
+prob84005s <- dplyr::left_join(prob84005,query84005,by='illumina_humanht_12_v4')
+prob84005sn <- na.omit(prob84005s)
+j84005 <- intersect(prob84005sn$illumina_humanht_12_v4,rownames(gse84005_exp))
+gse84005_exp <- gse84005_exp[j84005,]
+gse84005_exp <- as.data.frame(gse84005_exp)
+prob84005snc <-dplyr::filter(prob84005sn,!duplicated(prob84005sn$illumina_humanht_12_v4))
+gse84005_exp$entr <- prob84005snc$entrezgene_id
+gse84005_exp <- gse84005_exp[order(gse84005_exp$entr),]
+gse84005_exp1 <- aggregate(gse84005_exp[,c(1:(ncol(gse84005_exp)-1))],by=list(gse84005_exp$entr),mean)
+write.table(gse84005_exp1,file='gse84005.txt',sep='\t')
+
+gse101685 <- getGEO("GSE101685",AnnotGPL=F,getGPL=F)
+gse101685_exp <- exprs(gse101685[[1]])
+library(biomaRt)
+ensem <- useMart("ensembl")
+mart <- useDataset("hsapiens_gene_ensembl",mart=ensem)
+query101685 <- getBM(attributes=c("affy_hg_u133_plus_2","entrezgene_id"),filters=("affy_hg_u133_plus_2"),values=rownames(gse101685_exp),mart=mart)
+prob101685 <- data.frame(affy_hg_u133_plus_2=rownames(gse101685_exp),stringsAsFactors=F)
+prob101685s <- dplyr::left_join(prob101685,query101685,by='affy_hg_u133_plus_2')
+prob101685sn <- na.omit(prob101685s)
+j101685 <- intersect(prob101685sn$affy_hg_u133_plus_2,rownames(gse101685_exp))
+gse101685_exp <- gse101685_exp[j101685,]
+gse101685_exp <- as.data.frame(gse101685_exp)
+prob101685snc <-dplyr::filter(prob101685sn,!duplicated(prob101685sn$affy_hg_u133_plus_2))
+gse101685_exp$entr <- prob101685snc$entrezgene_id
+gse101685_exp <- gse101685_exp[order(gse101685_exp$entr),]
+gse101685_exp1 <- aggregate(gse101685_exp[,c(1:(ncol(gse101685_exp)-1))],by=list(gse101685_exp$entr),mean)
+write.table(gse101685_exp1,file='gse101685.txt',sep='\t')
+```
+
+illumina_humanht_12_v4
+
+affy_huex_1_0_st_v2
+
+affy_hg_u133_plus_2
+
+entrezgene_id
+
+ensembl_gene_id
+
+
+
+```R
+s012682 <- recount_url[which(recount_url$project == 'SRP012682'),]
+metadata <- all_metadata('gtex')
+ensg <- unlist(strsplit(rownames(rpkm),"[.]"))
+ens <- ensg[seq(1,length(ensg),2)]
+en <- data.frame(id=ens)
+rpkm <- cbind(en,rpkm)
+rpkm <- dplyr::filter(rpkm,!duplicated(rpkm$id))
+query <- getBM(attributes=c("ensembl_gene_id","entrezgene_id"),filters=("ensembl_gene_id"),values=rownames(rpkm),mart=mart)
+probe <- data.frame(ensembl_gene_id=rownames(rpkm),stringsAsFactors=F)
+probe2id <- dplyr::left_join(probe,query,by='ensembl_gene_id')
+probe2id <- dplyr::filter(probe2id,!duplicated(probe2id$ensembl_gene_id))
+probe2id <- tibble::column_to_rownames(probe2id,"ensembl_gene_id")
+rpkm <- rpkm[order(rpkm$entre),]
+rpkm1 <- aggregate(rpkm[,c(1:(ncol(rpkm)-1))],by=list(rpkm$entre),mean)
+write.table(rpkm1,file='gtex_liver.txt',sep='\t')
+savehistory('his.txt')
+
+library('org.Hs.eg.db')
+gencode <- gsub('\\..*', '', names(recount_genes))
+gene_info <- select(org.Hs.eg.db, gencode, c('ENTREZID', 'GENENAME', 'SYMBOL',
+    'ENSEMBL'), 'ENSEMBL')
+
 ```
 

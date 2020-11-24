@@ -32,5 +32,17 @@ It's a test repository
 withr::with_makevars(c(PKG_LIBS = "-liconv"), install.packages("haven"), assignment = "+=")
 withr::with_makevars(c(PKG_LIBS = "-liconv"), install.packages("readxl"), assignment = "+=")
 install.packages("tidyverse")
+
+for(i in 1:(nrow(g)-1)){
+  print(i)
+  for(j in (i+1):nrow(g)){
+    pair <- ifelse(g[i,] > g[j,],1,0)
+    pairRatio <- sum(pair)/sampleNum
+    if((pairRatio > 0.2) & (pairRatio < 0.8)){
+      rownames(pair) <- paste0(rownames(g)[i],"|",rownames(g)[j])
+      f <- rbind(f,pair)
+    }
+  }
+}
 ```
 
