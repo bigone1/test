@@ -22,12 +22,6 @@ It's a test repository
 | 58     | 18755158902             | zl159357   |
 |        |                         |            |
 
-| 公司 |                                      |      |
-| ---- | ------------------------------------ | ---- |
-| 盛趣 | 最长回文子串/最长不重复子串/简易正则 |      |
-|      |                                      |      |
-|      |                                      |      |
-
 ```R
 withr::with_makevars(c(PKG_LIBS = "-liconv"), install.packages("haven"), assignment = "+=")
 withr::with_makevars(c(PKG_LIBS = "-liconv"), install.packages("readxl"), assignment = "+=")
@@ -45,4 +39,6 @@ for(i in 1:(nrow(g)-1)){
   }
 }
 ```
+
+
 
