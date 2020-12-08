@@ -40,9 +40,3 @@ for(i in 1:(nrow(g)-1)){
 }
 ```
 
-| 日期              | 任务                                                         | 状态 |
-| ----------------- | ------------------------------------------------------------ | ---- |
-| 2020.11.30：17.32 | /home/zhoulin/fanai/irgps/consensus.R 使用consensusclusterplus分型  maxK=9 |      |
-| 2020.11.30：17.32 | /home/zhoulin/fanai/mnp/rscript.R  对所有的甲基数据做随机森林训练 |      |
-|                   |                                                              |      |
-
