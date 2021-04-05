@@ -1,14 +1,11 @@
 # test1
-| 时间      | 操作                                               | 完成 |
-| --------- | -------------------------------------------------- | ---- |
-| 2021.3.19 | 节点1：免疫基因对的单因素cox计算                   |      |
-|           | 节点3：xgboost的肿瘤正常与癌症诊断                 | √    |
-|           | 节点7：nohup python GC_xgb_2.py >> GC_xgb_2 2>&1 & |      |
-|           | 节点7：nohup python zengqiang.py &                 |      |
-
-
-
-
+|                                                              |
+| ------------------------------------------------------------ |
+| 从TCGA下载Tissue Slide数据<br/>/home/zhoulin/gdc-client download -m coad.txt(manifest文件) |
+| 生成切片<br/>conda activate os<br/>nohup bash coad.sh &<br/>nohup bash test.sh >> test.txt 2>&1 & |
+| anconda环境<br/>os                       /home/zhoulin/.conda/envs/os: openslide<br/>pytor                 *  /home/zhoulin/.conda/envs/pytor：torch<br/>tfg                      /home/zhoulin/.conda/envs/tfg |
+| editplus:注释--》ctrl+d  取消注释--》ctrl+b                  |
+| `trainCoxMlp` -训练Cox-nnet模型的主要功能 `CVLoglikelihood` -计算交叉验证的对数可能性（模型性能指标） `CIndex` -计算C-Index（模型性能指标） `L2CVSearch`-用于优化正则化参数的辅助函数；使用爬山算法搜索lambda `L2CVProfile`-用于优化正则化参数的辅助函数；跨一系列值配置lambda `evalNewData`-评估新数据或测试数据；输出线性预测因子（即对数风险比） `varImportance` -通过辍学程序确定变量的重要性 `saveModel` -将模型保存到二进制文件 `loadModel` -从文件加载模型 |
 
 It's a test repository
 
