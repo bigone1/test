@@ -1,4 +1,15 @@
 # test1
+| 时间      | 操作                                               | 完成 |
+| --------- | -------------------------------------------------- | ---- |
+| 2021.3.19 | 节点1：免疫基因对的单因素cox计算                   |      |
+|           | 节点3：xgboost的肿瘤正常与癌症诊断                 | √    |
+|           | 节点7：nohup python GC_xgb_2.py >> GC_xgb_2 2>&1 & |      |
+|           | 节点7：nohup python zengqiang.py &                 |      |
+
+
+
+
+
 It's a test repository
 
 ./bget.exe doi 10.1186/s12935-020-01351-3 -t 5 --suppl
